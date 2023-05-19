@@ -27,7 +27,22 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
+    const toyCollection = client.db('SuperToyDB').collection('toyes');
 
+    app.post('/postToys', async(req, res) =>{
+        const body = req.body;
+        if(!body){
+            return res.status(404).send({message: "body data not found"})
+        }
+        const result = await toyCollection.insertOne(body);
+        res.send(result);
+        console.log(result);
+    });
+
+    app.get("/allToys", async(req, res) => {
+        const result = await toyCollection.find({}).toArray();
+        res.send(result);
+    })
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
