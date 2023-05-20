@@ -44,12 +44,26 @@ async function run() {
         res.send(result);
     })
 
+    app.patch('/allToys/:id', async(req, res) => {
+        const id = req.params.id;
+        const filter = { _id: new ObjectId(id)};
+        const updatedToy = req.body;
+        const updateDoc = {
+            $set: {
+                status: updatedToy.status
+            },
+        };
+        const result = await toyCollection.updateOne(filter, updateDoc);
+        res.send(result);
+    })
+
     app.delete('/allToys/:id', async(req, res)=>{
         const id = req.params.id;
         const query = {_id: new ObjectId(id)};
         const result = await toyCollection.deleteOne(query);
         res.send(result);
     })
+
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
