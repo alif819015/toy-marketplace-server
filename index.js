@@ -28,6 +28,7 @@ async function run() {
     await client.connect();
 
     const toyCollection = client.db('SuperToyDB').collection('toyes');
+    
 
     app.post('/postToys', async(req, res) =>{
         const body = req.body;
@@ -41,6 +42,17 @@ async function run() {
 
     app.get("/allToys", async(req, res) => {
         const result = await toyCollection.find({}).toArray();
+        res.send(result);
+    })
+
+    //bookings
+    app.get('/toy-mail', async (req, res) =>{
+        console.log(req.query.email)
+        let query = {};
+        if(req.query?.email){
+            query = {email: req.query.email}
+        }
+        const result = await toyCollection.find(query).toArray();
         res.send(result);
     })
 
@@ -64,6 +76,14 @@ async function run() {
         res.send(result);
     })
 
+    // Shop by category 
+
+    const CategoryCollection = client.db('SuperToyDB').collection('ShopCategory');
+
+    app.get("/all-categories", async(req, res) => {
+        const result = await CategoryCollection.find({}).toArray();
+        res.send(result);
+    })
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
