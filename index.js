@@ -28,7 +28,24 @@ async function run() {
     await client.connect();
 
     const toyCollection = client.db('SuperToyDB').collection('toyes');
+
+    const indexKey = { toyName: 1, seller: 1};
+    const indexOptions = { name: "toyNameSeller"};
     
+    const result = await toyCollection.createIndex(indexKey, indexOptions);
+
+    app.get("/toySearchByName/:text", async(req, res) => {
+        const searchText = req.params.text;
+        const result = await toyCollection
+        .find({
+            $or: [
+                { toyName: {$regex: searchText, $options: "i"}},
+                { seller: { $regex: searchText, $options: "i"}},
+            ],
+        })
+        .toArray();
+        res.send(result);
+    });
 
     app.post('/postToys', async(req, res) =>{
         const body = req.body;
