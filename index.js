@@ -47,6 +47,13 @@ async function run() {
         res.send(result);
     });
 
+    app.get('/allToys/:id', async(req,res) =>{
+        const id = req.params.id;
+        const query = {_id: new ObjectId(id)}
+        const result = await toyCollection.findOne(query);
+        res.send(result);
+    })
+
     app.post('/postToys', async(req, res) =>{
         const body = req.body;
         if(!body){
@@ -56,6 +63,31 @@ async function run() {
         res.send(result);
         console.log(result);
     });
+
+    app.put('/postToys/:id', async(req, res)=> {
+        const id =req.params.id;
+        const filter = {_id: new ObjectId(id)}
+        const options = {upsert: true};
+        console.log(options)
+        const updateToy = req.body;
+        const Toy = {
+            $set: {
+                image: updateToy.image, 
+                price: updateToy.price, 
+                email: updateToy.email, 
+                color: updateToy.color, 
+                retting: updateToy.retting, 
+                toyName: updateToy.toyName, 
+                quantity: updateToy.quantity, 
+                description: updateToy.description, 
+                date: updateToy.date, 
+                seller: updateToy.seller, 
+                retting: updateToy.retting
+            }
+        }
+        const result = await toyCollection.updateOne(filter, Toy);
+        res.send(result);
+    })
 
     app.get("/allToys", async(req, res) => {
         const result = await toyCollection.find({}).toArray();
@@ -101,6 +133,13 @@ async function run() {
         const result = await CategoryCollection.find({}).toArray();
         res.send(result);
     })
+
+    // app.get('/all-categories/:id', async(req,res) =>{
+    //     const id = req.params.id;
+    //     const query = {_id: new ObjectId(id)}
+    //     const result = await CategoryCollection.findOne(query);
+    //     res.send(result);
+    // })
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
